@@ -1,13 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nraymond <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/23 02:38:20 by nraymond          #+#    #+#             */
+/*   Updated: 2023/12/23 02:46:55 by nraymond         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-#include <fcntl.h>
-#include <stdio.h>
-
-void	free_all_stash(char **stash)
+char	*check_last_empty(char **stash, char **buffer)
 {
-	if (!*stash)
-		return ;
-	free(*stash);
+	char	*line;
+
+	if (!*stash || !**stash)
+	{
+		free_all_stash(stash);
+		return (free(*buffer), NULL);
+	}
+	else
+	{
+		line = ft_strjoin(*stash, *buffer);
+		free_all_stash(stash);
+		return (free(*buffer), line);
+	}
 }
 
 int	get_end_line(char *line)
@@ -15,7 +34,7 @@ int	get_end_line(char *line)
 	int	i;
 
 	i = 0;
-	if (!line)
+	if (!line || !*line)
 		return (-1);
 	while (line[i])
 	{
@@ -26,69 +45,66 @@ int	get_end_line(char *line)
 	return (-1);
 }
 
-void	update_buff(char **stash, char **line)
+void	update_buff(char **buff, char **line)
 {
 	char	*new;
 
-	new = ft_strjoin(*stash, *line);
-	free(*stash);
-
-	*stash = new;
+	new = ft_strjoin(*buff, *line);
+	free(*buff);
+	*buff = new;
 }
 
-char	*read_line(int fd, char **stash)
+char	*extract_and_update_line(char **stash)
 {
-	char	*buff;
-	int	readc;
+	char	*line;
+	char	*updated_stash;
 
-	while (get_end_line(stash) == -1)
-	{
-		buff = ft_calloc(sizeof(char), BUFFER_SIZE + 1);
-		if (!buff)
-			return (ft_clear_all_stash(stash), NULL);
-		readc = read(fd, buff, BUFFER_SIZE);
-		if (readc <= 0) // file is empty, no /n || read error
-			return (free_all_stash(stash), free(buff), NULL);
-		buff[readc] = 0;
-		update_buff(stash, &buff);
-		free(buff);
-	}
-	return (free(line));
+	line = ft_substr(*stash, 0, get_end_line(*stash));
+	updated_stash = ft_substr
+		(*stash, get_end_line(*stash) + 1, ft_strlen(*stash) + 1);
+	free(*stash);
+	*stash = updated_stash;
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char		*stash[1024];
+	static char	*stash[1024];
 	char		*buffer;
+	char		*line;
+	int			readc;
 
 	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &line, 0) < 0)
-		return (free_all_stash(line), NULL);
-	stash[fd] = read_line(fd);
-	if (!buffer || !*buffer)
-		return (get_next_line(-1));
-	if (get_end_line(buffer) == -1)
+		return (free_all_stash(&*stash), NULL);
+	while (get_end_line(stash[fd]) == -1)
 	{
-		line[fd] = ft_substr(buffer, 0, ft_strlen(buffer));
-		return (free(buffer), line[fd]);
+		buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+		if (!buffer)
+			return (free_all_stash(&stash[fd]), NULL);
+		readc = read(fd, buffer, BUFFER_SIZE);
+		if (readc <= 0)
+			return (check_last_empty(&stash[fd], &buffer));
+		else if (stash[fd])
+			update_buff(&stash[fd], &buffer);
+		else
+			stash[fd] = ft_substr(buffer, 0, ft_strlen(buffer));
+		free(buffer);
 	}
-	else
-		line[fd] = ft_substr(buffer, 0, get_end_line(buffer));
-	return (free(buffer), line[fd]);
+	return (extract_and_update_line(&stash[fd]));
 }
-
+/*
 int	main(void)
 {
 	int fd = open("tests/test.txt", O_RDONLY);
-	char *line = get_next_line(fd); 
+	char *line; 
 	int i = 1;
-	while (i < 15)
+	while (line)
 	{
+		line = get_next_line(fd); 
 		printf("line %i = %s\n", i++, line);
 		free(line);
-		line = get_next_line(fd);
 	}
-	printf("line %i = %s\n", i, line);
-	free(line);
 	close(fd);
 	return (0);
 }
+*/

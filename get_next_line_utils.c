@@ -1,4 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nraymond <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/23 02:37:52 by nraymond          #+#    #+#             */
+/*   Updated: 2023/12/23 02:42:12 by nraymond         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
+
+void	free_all_stash(char **stash)
+{
+	if (!*stash)
+		return ;
+	free(*stash);
+}
 
 size_t	ft_strlen(char const *s)
 {
@@ -12,25 +31,21 @@ size_t	ft_strlen(char const *s)
 	return (i);
 }
 
-void	ft_bzero(char **s, size_t n)
-{
-	size_t	index;
-
-	index = 0;
-	while (index < n)
-		*s[index++] = '\0';
-}
-
 char	*ft_calloc(size_t nmemb, size_t size)
 {
 	char	*tab;
+	size_t	index;
 
+	index = 0;
+	if ((nmemb * size) / size != nmemb)
+		return (NULL);
 	if ((nmemb == 0) || (size == 0))
 		return (malloc(0));
-	tab = (char *)malloc(size * nmemb);
+	tab = malloc(size * nmemb);
 	if (!(tab))
 		return (NULL);
-	ft_bzero(&tab, (nmemb * size));
+	while (index < (nmemb * size))
+		tab[index++] = '\0';
 	return (tab);
 }
 
