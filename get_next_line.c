@@ -6,26 +6,22 @@
 /*   By: nraymond <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 02:38:20 by nraymond          #+#    #+#             */
-/*   Updated: 2023/12/23 02:46:55 by nraymond         ###   ########.fr       */
+/*   Updated: 2023/12/23 06:02:06 by nraymond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*check_last_empty(char **stash, char **buffer)
+char	*check_last_empty(char **stash)
 {
 	char	*line;
 
 	if (!*stash || !**stash)
-	{
-		free_all_stash(stash);
-		return (free(*buffer), NULL);
-	}
+		return (free_all_stash(stash), NULL);
 	else
 	{
-		line = ft_strjoin(*stash, *buffer);
-		free_all_stash(stash);
-		return (free(*buffer), line);
+		line = ft_substr(*stash, 0, ft_strlen(*stash));
+		return (free_all_stash(stash), line);
 	}
 }
 
@@ -69,41 +65,42 @@ char	*extract_and_update_line(char **stash)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash[1024];
+	static char	*stash;
 	char		*buffer;
-	char		*line;
 	int			readc;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &line, 0) < 0)
-		return (free_all_stash(&*stash), NULL);
-	while (get_end_line(stash[fd]) == -1)
+	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &buffer, 0) < 0)
+		return (free_all_stash(&stash), NULL);
+	while (get_end_line(stash) == -1)
 	{
 		buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
 		if (!buffer)
-			return (free_all_stash(&stash[fd]), NULL);
+			return (free_all_stash(&stash), NULL);
 		readc = read(fd, buffer, BUFFER_SIZE);
 		if (readc <= 0)
-			return (check_last_empty(&stash[fd], &buffer));
-		else if (stash[fd])
-			update_buff(&stash[fd], &buffer);
+			return (check_last_empty(&stash));
+		else if (stash)
+			update_buff(&stash, &buffer);
 		else
-			stash[fd] = ft_substr(buffer, 0, ft_strlen(buffer));
+			stash = ft_substr(buffer, 0, ft_strlen(buffer));
 		free(buffer);
 	}
-	return (extract_and_update_line(&stash[fd]));
+	return (extract_and_update_line(&stash));
 }
 /*
 int	main(void)
 {
-	int fd = open("tests/test.txt", O_RDONLY);
-	char *line; 
+	int fd = open("tests/test1.txt", O_RDONLY);
+	char *line = get_next_line(fd); 
 	int i = 1;
 	while (line)
 	{
-		line = get_next_line(fd); 
 		printf("line %i = %s\n", i++, line);
 		free(line);
+		line = get_next_line(fd); 
 	}
+	printf("line %i = %s\n", i++, line);
+	free(line);
 	close(fd);
 	return (0);
 }

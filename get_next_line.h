@@ -6,7 +6,7 @@
 /*   By: nraymond <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 02:42:32 by nraymond          #+#    #+#             */
-/*   Updated: 2023/12/23 02:44:21 by nraymond         ###   ########.fr       */
+/*   Updated: 2023/12/23 05:34:51 by nraymond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdio.h>
 
 // main
+char    *check_last_empty(char **stash);
 char	*get_next_line(int fd);
 int		get_end_line(char *line);
 void	update_buff(char **buff, char **line);
