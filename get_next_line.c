@@ -6,7 +6,7 @@
 /*   By: nraymond <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/23 02:38:20 by nraymond          #+#    #+#             */
-/*   Updated: 2023/12/23 06:02:06 by nraymond         ###   ########.fr       */
+/*   Updated: 2023/12/23 20:59:06 by nraymond         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	*check_last_empty(char **stash)
 {
 	char	*line;
 
-	if (!*stash || !**stash)
+	if (!*stash || !*stash[0])
 		return (free_all_stash(stash), NULL);
 	else
 	{
@@ -83,11 +83,11 @@ char	*get_next_line(int fd)
 			update_buff(&stash, &buffer);
 		else
 			stash = ft_substr(buffer, 0, ft_strlen(buffer));
+		printf("%s", stash);
 		free(buffer);
 	}
 	return (extract_and_update_line(&stash));
 }
-/*
 int	main(void)
 {
 	int fd = open("tests/test1.txt", O_RDONLY);
@@ -104,4 +104,3 @@ int	main(void)
 	close(fd);
 	return (0);
 }
-*/
