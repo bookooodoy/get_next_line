@@ -78,7 +78,7 @@ char	*get_next_line(int fd)
 			return (free_all_stash(&stash[fd]), NULL);
 		readc = read(fd, buffer, BUFFER_SIZE);
 		if (readc <= 0)
-			return (check_last_empty(&stash[fd]));
+			return (free(buffer), check_last_empty(&stash[fd]));
 		else if (stash[fd])
 			update_buff(&stash[fd], &buffer);
 		else
