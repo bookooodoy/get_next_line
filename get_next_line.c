@@ -78,12 +78,11 @@ char	*get_next_line(int fd)
 			return (free_all_stash(&stash), NULL);
 		readc = read(fd, buffer, BUFFER_SIZE);
 		if (readc <= 0)
-			return (check_last_empty(&stash));
+			return (free(buffer), check_last_empty(&stash));
 		else if (stash)
 			update_buff(&stash, &buffer);
 		else
 			stash = ft_substr(buffer, 0, ft_strlen(buffer));
-		printf("%s", stash);
 		free(buffer);
 	}
 	return (extract_and_update_line(&stash));
