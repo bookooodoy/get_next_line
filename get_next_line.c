@@ -12,16 +12,22 @@
 
 #include "get_next_line.h"
 
-char	*check_last_empty(char **stash)
+char	*check_last_empty(char **stash, char **buffer)
 {
 	char	*line;
 
-	if (!*stash || !*stash[0])
-		return (free_all_stash(stash), NULL);
+	if (!stash || !*stash)
+		return (free(*buffer), NULL);
+	else if (*stash[0] == 0)
+	{
+		free(*buffer);
+		return (free_all_stash(&*stash), NULL);
+	}
 	else
 	{
+		free(*buffer);
 		line = ft_substr(*stash, 0, ft_strlen(*stash));
-		return (free_all_stash(stash), line);
+		return (free_all_stash(&*stash), line);
 	}
 }
 
@@ -73,13 +79,14 @@ char	*get_next_line(int fd)
 		return (free_all_stash(&stash), NULL);
 	while (get_end_line(stash) == -1)
 	{
-		buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!buffer)
 			return (free_all_stash(&stash), NULL);
 		readc = read(fd, buffer, BUFFER_SIZE);
+		buffer[readc] = 0;
 		if (readc <= 0)
-			return (free(buffer), check_last_empty(&stash));
-		else if (stash)
+			return (check_last_empty(&stash, &buffer));
+		else if (stash != NULL)
 			update_buff(&stash, &buffer);
 		else
 			stash = ft_substr(buffer, 0, ft_strlen(buffer));
@@ -87,9 +94,11 @@ char	*get_next_line(int fd)
 	}
 	return (extract_and_update_line(&stash));
 }
+
+/*
 int	main(void)
 {
-	int fd = open("tests/test1.txt", O_RDONLY);
+	int fd = open("tests/multiple_line_no_nl", O_RDONLY);
 	char *line = get_next_line(fd); 
 	int i = 1;
 	while (line)
@@ -98,8 +107,7 @@ int	main(void)
 		free(line);
 		line = get_next_line(fd); 
 	}
-	printf("line %i = %s\n", i++, line);
-	free(line);
 	close(fd);
 	return (0);
 }
+*/

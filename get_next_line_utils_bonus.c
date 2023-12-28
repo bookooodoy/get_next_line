@@ -14,8 +14,23 @@
 
 void	free_all_stash(char **stash)
 {
-	if (!*stash)
+	if (*stash)
+		free(*stash);
+	*stash = NULL;
+}
+
+void	free_all_stash_fd(char **stash)
+{
+	int	i;
+
+	i = 0;
+	if (!stash)
 		return ;
+	while (i < 1024)
+	{
+		free_all_stash(&stash[i]);
+		i++;
+	}
 	free(*stash);
 }
 
@@ -29,24 +44,6 @@ size_t	ft_strlen(char const *s)
 	while (s[i])
 		i++;
 	return (i);
-}
-
-char	*ft_calloc(size_t nmemb, size_t size)
-{
-	char	*tab;
-	size_t	index;
-
-	index = 0;
-	if ((nmemb * size) / size != nmemb)
-		return (NULL);
-	if ((nmemb == 0) || (size == 0))
-		return (malloc(0));
-	tab = malloc(size * nmemb);
-	if (!(tab))
-		return (NULL);
-	while (index < (nmemb * size))
-		tab[index++] = '\0';
-	return (tab);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)

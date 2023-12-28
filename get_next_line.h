@@ -19,7 +19,7 @@
 # include <stdio.h>
 
 // main
-char	*check_last_empty(char **stash);
+char	*check_last_empty(char **stash, char **buffer);
 char	*get_next_line(int fd);
 int		get_end_line(char *line);
 void	update_buff(char **buff, char **line);
@@ -28,7 +28,6 @@ void	free_all_stash(char **stash);
 
 //utils
 size_t	ft_strlen(char const *s);
-char	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 
